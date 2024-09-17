@@ -2,26 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  body {
+    @apply font-sans bg-gray-100 m-0 p-0;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  h1 {
+    @apply text-center;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+@layer components {
+  .chat-input {
+    @apply p-2 w-full max-w-md;
+  }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .chat-button {
+    @apply p-2 bg-blue-500 text-white border-none cursor-pointer hover:bg-blue-600;
   }
 }
