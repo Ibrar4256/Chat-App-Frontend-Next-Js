@@ -1,9 +1,9 @@
-'use client'; // Enables client-side rendering for this page
+'use client'; 
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import styles from './chat.module.css';
 
-const socket = io('http://localhost:3002');     // pointing towards socket port in backend
+const socket = io('http://localhost:3002');    
 
 export default function ChatRoom() {
   const [username, setUsername] = useState('');
