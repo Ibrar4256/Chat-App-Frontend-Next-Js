@@ -1,14 +1,31 @@
-'use client'; 
+'use client';
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import styles from './chat.module.css';
 
-const socket = io('http://localhost:3002');    
+// Define types for our messages and socket events
+interface Message {
+  user: string;
+  message: string;
+}
+
+interface ServerToClientEvents {
+  receiveMessage: (msg: Message) => void;
+  'user-joined': (data: { message: string }) => void;
+  'user-left': (data: { message: string }) => void;
+}
+
+interface ClientToServerEvents {
+  setUsername: (username: string) => void;
+  sendMessage: (msg: { message: string }) => void;
+}
+
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3002');
 
 export default function ChatRoom() {
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isUsernameSet, setIsUsernameSet] = useState(false);
 
   useEffect(() => {
@@ -45,6 +62,13 @@ export default function ChatRoom() {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessageHandler();
+    }
+  };
+
   return (
     <div className={styles.chatContainer}>
       {!isUsernameSet ? (
@@ -55,6 +79,7 @@ export default function ChatRoom() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && setUsernameHandler()}
             className={styles.input}
           />
           <button onClick={setUsernameHandler} className={styles.button}>
@@ -88,6 +113,7 @@ export default function ChatRoom() {
               placeholder="Type your message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
               className={styles.textarea}
             />
             <button onClick={sendMessageHandler} className={styles.button}>
